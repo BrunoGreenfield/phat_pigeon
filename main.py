@@ -1,5 +1,6 @@
 import pygame
 from sys import exit
+from random import randint
 
 # Constants
 FRAME_RATE = 60
@@ -43,19 +44,22 @@ class Obstacle(pygame.sprite.Sprite):
     super().__init__()
     self.image = pygame.Surface((60, 60))
     self.image.fill((0, 255, 0))
-    self.rect = self.image.get_rect(midbottom=(WIDTH, HEIGHT//2))
+    self.rect = self.image.get_rect(midbottom=(WIDTH, HEIGHT-randint(0, HEIGHT-60)))
   
-  def update(self):
-    self.rect.x -= 2
-    if self.rect.right <= 0:
+  def destroy(self):
+    if self.rect.x <= 0:
       self.kill()
+    self.destroy()
+
+  def update(self):
+    self.rect.x -= 4
 
 # Functions
 def collision_sprite():
-    if pygame.sprite.spritecollide(player.sprite,obstacle,False):
-        obstacle.empty()
-        return False
-    else: return True
+  if pygame.sprite.spritecollide(player.sprite,obstacle,False):
+    obstacle.empty()
+    return False
+  else: return True
 
 def update_fps():
 	fps = str(int(clock.get_fps()))
@@ -63,11 +67,11 @@ def update_fps():
 	return fps_text
 
 def display_score():
-    current_time = int((pygame.time.get_ticks() - start_time)/1000)
-    score_surf = pixel_font.render(f'Score: {current_time}', False, pygame.Color(64,64,64))
-    score_rect = score_surf.get_rect(center=(WIDTH/2, 50))
-    screen.blit(score_surf, score_rect)
-    return current_time
+  current_time = int((pygame.time.get_ticks() - start_time)/1000)
+  score_surf = pixel_font.render(f'Score: {current_time}', False, pygame.Color(64,64,64))
+  score_rect = score_surf.get_rect(center=(WIDTH/2, 50))
+  screen.blit(score_surf, score_rect)
+  return current_time
 
 
 # Initialization and setup
@@ -81,6 +85,7 @@ start_time = 0
 pixel_font = pygame.font.Font('font/pixel.ttf', 24)
 game_active = True
 score = 0
+spawn_speed = 1400
 
 # Groups
 player = pygame.sprite.GroupSingle()
@@ -88,6 +93,10 @@ player.add(Player())
 
 obstacle = pygame.sprite.Group()
 
+
+# timer
+obstacle_timer = pygame.USEREVENT + 1
+pygame.time.set_timer(obstacle_timer, spawn_speed)
 
 # Game loop
 while True:
@@ -97,17 +106,30 @@ while True:
       exit()
     if game_active:
       score = display_score()
+      if event.type == obstacle_timer:
+        obstacle.add(Obstacle())
+    else:
+      if (event.type == pygame.KEYDOWN and event.key == pygame.K_UP) or (event.type == pygame.KEYDOWN and event.key == pygame.K_w):
+        game_active = True
+        player.empty()
+        player.add(Player())
+        obstacle.empty()
+        start_time = pygame.time.get_ticks()
+        score = 0
+
   if game_active:
     display_score()
     
     screen.fill((255,255,255))
-    screen.blit(update_fps(), (0,0))
-    player.draw(screen)
-    player.update()
+    screen.blit(update_fps(), (0,0))    
 
     obstacle.draw(screen)
     obstacle.update()
+
     game_active = collision_sprite()
+
+    player.draw(screen)
+    player.update()
   else:
     screen.fill((255,255,255))
     score_message = pixel_font.render(f'Your scored: {score}', False, (255,0,0))
