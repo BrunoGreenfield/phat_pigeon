@@ -1,3 +1,5 @@
+# phat pigeon :D
+
 import pygame
 from sys import exit
 from random import randint
@@ -7,7 +9,9 @@ FRAME_RATE = 60
 HEIGHT = 600
 WIDTH = 1200
 
-# Classes
+#********************************************************************************************#
+
+# Player class
 class Player(pygame.sprite.Sprite):
   def __init__(self):
     super().__init__()
@@ -21,9 +25,9 @@ class Player(pygame.sprite.Sprite):
   def player_input(self):
     keys = pygame.key.get_pressed()
     if keys[pygame.K_UP] or keys[pygame.K_w]: 
-      self.gravity = -10
+      self.gravity = -jump_height
     if keys[pygame.K_DOWN] or keys[pygame.K_s]:
-      self.gravity = 10
+      self.gravity = fall_speed
 
   def apply_gravity(self):
     global game_active
@@ -38,7 +42,9 @@ class Player(pygame.sprite.Sprite):
     self.player_input()
     self.apply_gravity()
 
+#********************************************************************************************#
 
+# Obstacle class
 class Obstacle(pygame.sprite.Sprite):
   def __init__(self):
     super().__init__()
@@ -47,20 +53,50 @@ class Obstacle(pygame.sprite.Sprite):
     self.rect = self.image.get_rect(midbottom=(WIDTH, HEIGHT-randint(0, HEIGHT-60)))
   
   def destroy(self):
-    if self.rect.x <= 0:
+    if self.rect.x <= -60:
       self.kill()
 
   def update(self):
     self.rect.x -= 4
     self.destroy()
 
-# Functions
-def collision_sprite():
+#********************************************************************************************#
+
+# Food class
+class Food(pygame.sprite.Sprite):
+  def __init__(self):
+    super().__init__()
+    self.image = pygame.Surface((60, 60))
+    self.image.fill((0, 0, 255))
+    self.rect = self.image.get_rect(midbottom=(WIDTH, HEIGHT-randint(0, HEIGHT-60)))
+  
+  def destroy(self):
+    if self.rect.x <= -60:
+      self.kill()
+    if self.rect.colliderect(player.sprite.rect):
+      self.kill()
+
+  def update(self):
+    self.rect.x -= 4
+    self.destroy()
+
+#********************************************************************************************#
+
+# Collisions
+def collision_obstacle():
   if pygame.sprite.spritecollide(player.sprite,obstacle,False):
     obstacle.empty()
-    return False
+    return False # This needs to be false to stop the game
   else: return True
 
+def collision_food():
+  if pygame.sprite.spritecollide(player.sprite,food,False):
+    return True
+  else: return False
+
+#********************************************************************************************#
+
+# Functions
 def update_fps():
 	fps = str(int(clock.get_fps()))
 	fps_text = pixel_font.render(f'FPS: {fps}', False, pygame.Color(64,64,64))
@@ -73,19 +109,26 @@ def display_score():
   screen.blit(score_surf, score_rect)
   return current_time
 
+#********************************************************************************************#
 
 # Initialization and setup
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("FAT PIGEON")
+pygame.display.set_caption("PHAT PIGEON")
+
+#********************************************************************************************#
 
 # Variables
 clock = pygame.time.Clock()
 start_time = 0
 pixel_font = pygame.font.Font('font/pixel.ttf', 24)
-game_active = True
+game_active = False
 score = 0
 spawn_speed = 1400
+jump_height = 10
+fall_speed = 10
+
+#********************************************************************************************#
 
 # Groups
 player = pygame.sprite.GroupSingle()
@@ -93,10 +136,18 @@ player.add(Player())
 
 obstacle = pygame.sprite.Group()
 
+food = pygame.sprite.Group()
 
-# timer
+#********************************************************************************************#
+
+# Timer
 obstacle_timer = pygame.USEREVENT + 1
 pygame.time.set_timer(obstacle_timer, spawn_speed)
+
+food_timer = pygame.USEREVENT + 2
+pygame.time.set_timer(food_timer, 1000)
+
+#********************************************************************************************#
 
 # Game loop
 while True:
@@ -105,9 +156,15 @@ while True:
       pygame.quit()
       exit()
     if game_active:
+      if collision_food():
+        jump_height -= 2
+        fall_speed += 2
+
       score = display_score()
       if event.type == obstacle_timer:
         obstacle.add(Obstacle())
+      if event.type == food_timer:
+        food.add(Food())
     else:
       if (event.type == pygame.KEYDOWN and event.key == pygame.K_UP) or (event.type == pygame.KEYDOWN and event.key == pygame.K_w):
         game_active = True
@@ -123,18 +180,31 @@ while True:
     screen.fill((255,255,255))
     screen.blit(update_fps(), (0,0))    
 
+    food.draw(screen)
+    food.update()
+
     obstacle.draw(screen)
     obstacle.update()
 
-    game_active = collision_sprite()
+    
+
+    game_active = collision_obstacle()
 
     player.draw(screen)
     player.update()
   else:
     screen.fill((255,255,255))
-    score_message = pixel_font.render(f'Your scored: {score}', False, (255,0,0))
-    score_message_rect = score_message.get_rect(center = (WIDTH/2, HEIGHT/2))
-    screen.blit(score_message, score_message_rect)
+    jump_height = 10
+    fall_speed = 10
+
+    if score == 0:
+      score_surf = pixel_font.render(f'Press UP or w to start', False, pygame.Color(64,64,64))
+      score_surf_rect = score_surf.get_rect(center=(WIDTH/2, HEIGHT/2))
+      screen.blit(score_surf, score_surf_rect)
+    else:
+      score_message = pixel_font.render(f'Your scored: {score}', False, (64,64,64))
+      score_message_rect = score_message.get_rect(center = (WIDTH/2, HEIGHT/2))
+      screen.blit(score_message, score_message_rect)
 
   pygame.display.update()
 
