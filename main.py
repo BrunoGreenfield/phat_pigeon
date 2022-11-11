@@ -49,10 +49,10 @@ class Obstacle(pygame.sprite.Sprite):
   def destroy(self):
     if self.rect.x <= 0:
       self.kill()
-    self.destroy()
 
   def update(self):
     self.rect.x -= 4
+    self.destroy()
 
 # Functions
 def collision_sprite():
