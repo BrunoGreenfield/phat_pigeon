@@ -8,6 +8,7 @@ from random import randint
 FRAME_RATE = 60
 HEIGHT = 600
 WIDTH = 1200
+PHATNESS_INCREASE = 0.5
 
 #********************************************************************************************#
 
@@ -69,17 +70,15 @@ class Food(pygame.sprite.Sprite):
     self.image = pygame.Surface((60, 60))
     self.image.fill((0, 0, 255))
     self.rect = self.image.get_rect(midbottom=(WIDTH, HEIGHT-randint(0, HEIGHT-60)))
+    
   
   def destroy(self):
     global food_collision
     if self.rect.x <= -60:
       self.kill()
-    if self.rect.colliderect(player.sprite.rect):
+    if pygame.sprite.spritecollide(self, obstacle, False):
       self.kill()
-      food_collision = True
-    else:
-      food_collision = False
-
+    
   def update(self):
     self.rect.x -= 4
     self.destroy()
@@ -93,10 +92,17 @@ def collision_obstacle():
     return False # This needs to be false to stop the game
   else: return True
 
-# def collision_food():
-#   if pygame.sprite.spritecollide(player.sprite,food,False):
-#     return True
-#   else: return False
+def collision_food():
+  global jump_height
+  global fall_speed
+  global PHATNESS_INCREASE
+
+  if pygame.sprite.spritecollide(player.sprite,food,True):
+    jump_height -= PHATNESS_INCREASE
+    fall_speed += PHATNESS_INCREASE
+    return True
+
+  else: return False
 
 #********************************************************************************************#
 
@@ -108,10 +114,11 @@ def update_fps():
 
 def display_score():
   current_time = int((pygame.time.get_ticks() - start_time)/1000)
-  score_surf = pixel_font.render(f'Score: {current_time}', False, pygame.Color(64,64,64))
-  score_rect = score_surf.get_rect(center=(WIDTH/2, 50))
-  screen.blit(score_surf, score_rect)
   return current_time
+
+def display_score_text():
+  score_text = pixel_font.render(f'Score: {display_score()}', False, pygame.Color(64,64,64))
+  return score_text
 
 #********************************************************************************************#
 
@@ -127,11 +134,17 @@ clock = pygame.time.Clock()
 start_time = 0
 pixel_font = pygame.font.Font('font/pixel.ttf', 24)
 game_active = False
-food_collision = False
 score = 0
 spawn_speed = 1400
 jump_height = 10
 fall_speed = 10
+
+#********************************************************************************************#
+
+# Other stuff goes here
+
+score_text_rect = display_score_text().get_rect(center=(WIDTH//2, 30))
+
 
 #********************************************************************************************#
 
@@ -150,7 +163,7 @@ obstacle_timer = pygame.USEREVENT + 1
 pygame.time.set_timer(obstacle_timer, spawn_speed)
 
 food_timer = pygame.USEREVENT + 2
-pygame.time.set_timer(food_timer, 1000)
+pygame.time.set_timer(food_timer, 1500)
 
 #********************************************************************************************#
 
@@ -161,11 +174,6 @@ while True:
       pygame.quit()
       exit()
     if game_active:
-      if food_collision == True:
-        print("YUM")
-        jump_height -= 2
-        fall_speed += 2
-
       score = display_score()
       if event.type == obstacle_timer:
         obstacle.add(Obstacle())
@@ -177,14 +185,17 @@ while True:
         player.empty()
         player.add(Player())
         obstacle.empty()
+        food.empty()
         start_time = pygame.time.get_ticks()
         score = 0
 
   if game_active:
     display_score()
-    
+    collision_food()
+
     screen.fill((255,255,255))
-    screen.blit(update_fps(), (0,0))    
+    screen.blit(update_fps(), (0,0))  
+
 
     food.draw(screen)
     food.update()
@@ -192,12 +203,12 @@ while True:
     obstacle.draw(screen)
     obstacle.update()
 
-    
-
     game_active = collision_obstacle()
 
     player.draw(screen)
     player.update()
+
+    screen.blit(display_score_text(), score_text_rect)
   else:
     screen.fill((255,255,255))
     jump_height = 10
@@ -209,7 +220,7 @@ while True:
       screen.blit(score_surf, score_surf_rect)
     else:
       score_message = pixel_font.render(f'Your scored: {score}', False, (64,64,64))
-      score_message_rect = score_message.get_rect(center = (WIDTH/2, HEIGHT/2))
+      score_message_rect = score_message.get_rect(center=(WIDTH/2, HEIGHT/2))
       screen.blit(score_message, score_message_rect)
 
   pygame.display.update()
