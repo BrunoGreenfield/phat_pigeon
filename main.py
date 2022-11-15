@@ -71,10 +71,14 @@ class Food(pygame.sprite.Sprite):
     self.rect = self.image.get_rect(midbottom=(WIDTH, HEIGHT-randint(0, HEIGHT-60)))
   
   def destroy(self):
+    global food_collision
     if self.rect.x <= -60:
       self.kill()
     if self.rect.colliderect(player.sprite.rect):
       self.kill()
+      food_collision = True
+    else:
+      food_collision = False
 
   def update(self):
     self.rect.x -= 4
@@ -89,10 +93,10 @@ def collision_obstacle():
     return False # This needs to be false to stop the game
   else: return True
 
-def collision_food():
-  if pygame.sprite.spritecollide(player.sprite,food,False):
-    return True
-  else: return False
+# def collision_food():
+#   if pygame.sprite.spritecollide(player.sprite,food,False):
+#     return True
+#   else: return False
 
 #********************************************************************************************#
 
@@ -123,6 +127,7 @@ clock = pygame.time.Clock()
 start_time = 0
 pixel_font = pygame.font.Font('font/pixel.ttf', 24)
 game_active = False
+food_collision = False
 score = 0
 spawn_speed = 1400
 jump_height = 10
@@ -156,7 +161,8 @@ while True:
       pygame.quit()
       exit()
     if game_active:
-      if collision_food():
+      if food_collision == True:
+        print("YUM")
         jump_height -= 2
         fall_speed += 2
 
