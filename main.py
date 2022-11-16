@@ -143,8 +143,12 @@ fall_speed = 10
 
 # Other stuff goes here
 
-score_text_rect = display_score_text().get_rect(center=(WIDTH//2, 30))
+score_text_rect = display_score_text().get_rect(center=(WIDTH-120, 30))
 
+phatness_colour = 'gray'
+phatness_level = '*'
+phatness_text = pixel_font.render(f'Fattness: {phatness_level}', False, pygame.Color(phatness_colour))
+phatness_text_rect = phatness_text.get_rect(center=(WIDTH/2, 30))
 
 #********************************************************************************************#
 
