@@ -1,6 +1,7 @@
 # phat pigeon :D
 
 import pygame
+import math
 from sys import exit
 from random import randint
 
@@ -135,6 +136,8 @@ start_time = 0
 pixel_font = pygame.font.Font('font/pixel.ttf', 24)
 game_active = False
 score = 0
+scroll = 0
+k = 0
 spawn_speed = 1400
 jump_height = 10
 fall_speed = 10
@@ -142,6 +145,10 @@ fall_speed = 10
 #********************************************************************************************#
 
 # Other stuff goes here
+
+back_surf = pygame.image.load('graphics/background_blured.png').convert_alpha()
+
+tiles = math.ceil(WIDTH/back_surf.get_width()) + 1
 
 score_text_rect = display_score_text().get_rect(center=(WIDTH-120, 30))
 
@@ -197,7 +204,19 @@ while True:
     display_score()
     collision_food()
 
-    screen.fill((255,255,255))
+    k = 0
+
+    i = 0
+    while i < tiles:
+      screen.blit(back_surf, (i*back_surf.get_width()+scroll, 0))
+      i += 1
+    
+    scroll -= 4
+
+    if abs(scroll) > back_surf.get_width():
+      scroll = 0    
+
+    # screen.fill((255,255,255))
     screen.blit(update_fps(), (0,0))  
 
 
@@ -214,18 +233,20 @@ while True:
 
     screen.blit(display_score_text(), score_text_rect)
   else:
-    screen.fill((255,255,255))
     jump_height = 10
     fall_speed = 10
 
-    if score == 0:
+    if k > 30:
+      score_message = pixel_font.render(f'Your scored: {score}', False, (64,64,64))
+      score_message_rect = score_message.get_rect(center=(WIDTH/2, HEIGHT/2))
+      screen.blit(score_message, score_message_rect)
+    elif score == 0:
+      screen.fill((255,255,255))
       score_surf = pixel_font.render(f'Press UP or w to start', False, pygame.Color(64,64,64))
       score_surf_rect = score_surf.get_rect(center=(WIDTH/2, HEIGHT/2))
       screen.blit(score_surf, score_surf_rect)
     else:
-      score_message = pixel_font.render(f'Your scored: {score}', False, (64,64,64))
-      score_message_rect = score_message.get_rect(center=(WIDTH/2, HEIGHT/2))
-      screen.blit(score_message, score_message_rect)
+      k += 1
 
   pygame.display.update()
 
