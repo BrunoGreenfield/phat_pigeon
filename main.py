@@ -146,7 +146,7 @@ fall_speed = 10
 
 # Other stuff goes here
 
-back_surf = pygame.image.load('graphics/background_blured.png').convert_alpha()
+back_surf = pygame.image.load('graphics/background.png').convert_alpha()
 
 tiles = math.ceil(WIDTH/back_surf.get_width()) + 1
 
@@ -236,7 +236,7 @@ while True:
     jump_height = 10
     fall_speed = 10
 
-    if k > 30:
+    if k > 90:
       score_message = pixel_font.render(f'Your scored: {score}', False, (64,64,64))
       score_message_rect = score_message.get_rect(center=(WIDTH/2, HEIGHT/2))
       screen.blit(score_message, score_message_rect)
