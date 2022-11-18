@@ -211,7 +211,7 @@ while True:
       screen.blit(back_surf, (i*back_surf.get_width()+scroll, 0))
       i += 1
     
-    scroll -= 4
+    scroll -= 3
 
     if abs(scroll) > back_surf.get_width():
       scroll = 0    
