@@ -180,6 +180,8 @@ pygame.time.set_timer(food_timer, 1500)
 
 # Game loop
 while True:
+  n = 0
+
   for event in pygame.event.get():
     if event.type == pygame.QUIT:
       pygame.quit()
@@ -191,20 +193,23 @@ while True:
       if event.type == food_timer:
         food.add(Food())
     else:
-      if (event.type == pygame.KEYDOWN and event.key == pygame.K_UP) or (event.type == pygame.KEYDOWN and event.key == pygame.K_w):
-        game_active = True
-        player.empty()
-        player.add(Player())
-        obstacle.empty()
-        food.empty()
-        start_time = pygame.time.get_ticks()
-        score = 0
+      if n >= 60 or score == 0:
+        if (event.type == pygame.KEYDOWN and event.key == pygame.K_UP) or (event.type == pygame.KEYDOWN and event.key == pygame.K_w):
+          game_active = True
+          player.empty()
+          player.add(Player())
+          obstacle.empty()
+          food.empty()
+          start_time = pygame.time.get_ticks()
+          score = 0
+      else:
+        n += 1
 
   if game_active:
     display_score()
     collision_food()
 
-    k = 0
+    k=0
 
     i = 0
     while i < tiles:
@@ -237,6 +242,7 @@ while True:
     fall_speed = 10
 
     if k > 90:
+      screen.fill((255,255,255))
       score_message = pixel_font.render(f'Your scored: {score}', False, (64,64,64))
       score_message_rect = score_message.get_rect(center=(WIDTH/2, HEIGHT/2))
       screen.blit(score_message, score_message_rect)
