@@ -178,10 +178,10 @@ pygame.time.set_timer(food_timer, 1500)
 
 #********************************************************************************************#
 
+n=0
+
 # Game loop
 while True:
-  n = 0
-
   for event in pygame.event.get():
     if event.type == pygame.QUIT:
       pygame.quit()
@@ -193,7 +193,7 @@ while True:
       if event.type == food_timer:
         food.add(Food())
     else:
-      if n >= 60 or score == 0:
+      if (n >= 3) or (score == 0 and n >= 5):
         if (event.type == pygame.KEYDOWN and event.key == pygame.K_UP) or (event.type == pygame.KEYDOWN and event.key == pygame.K_w):
           game_active = True
           player.empty()
@@ -202,6 +202,7 @@ while True:
           food.empty()
           start_time = pygame.time.get_ticks()
           score = 0
+          n=0
       else:
         n += 1
 
@@ -241,7 +242,7 @@ while True:
     jump_height = 10
     fall_speed = 10
 
-    if k > 90:
+    if k > 60:
       screen.fill((255,255,255))
       score_message = pixel_font.render(f'Your scored: {score}', False, (64,64,64))
       score_message_rect = score_message.get_rect(center=(WIDTH/2, HEIGHT/2))
