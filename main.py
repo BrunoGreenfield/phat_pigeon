@@ -1,7 +1,6 @@
 # phat pigeon :D
 
-import pygame
-import math
+import pygame, math
 from sys import exit
 from random import randint
 
@@ -17,8 +16,8 @@ PHATNESS_INCREASE = 0.5
 class Player(pygame.sprite.Sprite):
   def __init__(self):
     super().__init__()
-    self.image = pygame.Surface((60, 60))
-    self.image.fill((255, 0, 0))
+    #player_jump = pygame.image.load("graphics/pigeon_jump1_fixed.png")
+    self.image = pygame.image.load("graphics/pigeon_mid1_fixed.png")
     self.rect = self.image.get_rect(midbottom=(WIDTH // 2, HEIGHT//2))
 
     self.gravity = 0
@@ -30,6 +29,7 @@ class Player(pygame.sprite.Sprite):
       self.gravity = -jump_height
     if keys[pygame.K_DOWN] or keys[pygame.K_s]:
       self.gravity = fall_speed
+    
 
   def apply_gravity(self):
     global game_active
@@ -39,10 +39,17 @@ class Player(pygame.sprite.Sprite):
       self.rect.bottom = HEIGHT
     if self.rect.top <= 0:
       game_active = False
+  
+  def floor_collision(self):
+    global game_active
+    if self.rect.bottom >= 569:
+      #game_active = False
+      self.rect.bottom = 569
 
   def update(self):
     self.player_input()
     self.apply_gravity()
+    self.floor_collision()
 
 #********************************************************************************************#
 
@@ -52,7 +59,7 @@ class Obstacle(pygame.sprite.Sprite):
     super().__init__()
     self.image = pygame.Surface((60, 60))
     self.image.fill((0, 255, 0))
-    self.rect = self.image.get_rect(midbottom=(WIDTH, HEIGHT-randint(0, HEIGHT-60)))
+    self.rect = self.image.get_rect(midbottom=(WIDTH, HEIGHT-randint(31, HEIGHT-60)))
   
   def destroy(self):
     if self.rect.x <= -60:
@@ -70,7 +77,7 @@ class Food(pygame.sprite.Sprite):
     super().__init__()
     self.image = pygame.Surface((60, 60))
     self.image.fill((0, 0, 255))
-    self.rect = self.image.get_rect(midbottom=(WIDTH, HEIGHT-randint(0, HEIGHT-60)))
+    self.rect = self.image.get_rect(midbottom=(WIDTH, HEIGHT-randint(31, HEIGHT-60)))
     
   
   def destroy(self):
@@ -146,16 +153,13 @@ fall_speed = 10
 
 # Other stuff goes here
 
-back_surf = pygame.image.load('graphics/background.png').convert_alpha()
-
-tiles = math.ceil(WIDTH/back_surf.get_width()) + 1
 
 score_text_rect = display_score_text().get_rect(center=(WIDTH-120, 30))
 
-phatness_colour = 'gray'
-phatness_level = '*'
-phatness_text = pixel_font.render(f'Fattness: {phatness_level}', False, pygame.Color(phatness_colour))
-phatness_text_rect = phatness_text.get_rect(center=(WIDTH/2, 30))
+ground_surf = pygame.image.load('graphics/Scenes/default_scene/floor_fixed2.png').convert_alpha()
+background_surf = pygame.image.load('graphics/Scenes/default_scene/backgroundL_fixed.png').convert_alpha()
+
+tiles = math.ceil(WIDTH/background_surf.get_width()) + 1
 
 #********************************************************************************************#
 
@@ -178,8 +182,6 @@ pygame.time.set_timer(food_timer, 1500)
 
 #********************************************************************************************#
 
-n=0
-
 # Game loop
 while True:
   for event in pygame.event.get():
@@ -193,33 +195,28 @@ while True:
       if event.type == food_timer:
         food.add(Food())
     else:
-      if (n >= 3) or (score == 0 and n >= 5):
-        if (event.type == pygame.KEYDOWN and event.key == pygame.K_UP) or (event.type == pygame.KEYDOWN and event.key == pygame.K_w):
-          game_active = True
-          player.empty()
-          player.add(Player())
-          obstacle.empty()
-          food.empty()
-          start_time = pygame.time.get_ticks()
-          score = 0
-          n=0
-      else:
-        n += 1
+      if (event.type == pygame.KEYDOWN and event.key == pygame.K_UP) or (event.type == pygame.KEYDOWN and event.key == pygame.K_w):
+        game_active = True
+        player.empty()
+        player.add(Player())
+        obstacle.empty()
+        food.empty()
+        start_time = pygame.time.get_ticks()
+        score = 0
 
   if game_active:
+    screen.fill((0, 0, 0))
     display_score()
     collision_food()
-
-    k=0
-
     i = 0
     while i < tiles:
-      screen.blit(back_surf, (i*back_surf.get_width()+scroll, 0))
+      screen.blit(background_surf, (i*background_surf.get_width()+scroll, 0))
+      screen.blit(ground_surf, (i*ground_surf.get_width()+scroll, HEIGHT-ground_surf.get_height()))
       i += 1
     
-    scroll -= 3
+    scroll -= 4
 
-    if abs(scroll) > back_surf.get_width():
+    if abs(scroll) > ground_surf.get_width():
       scroll = 0    
 
     # screen.fill((255,255,255))
@@ -228,7 +225,6 @@ while True:
 
     food.draw(screen)
     food.update()
-
     obstacle.draw(screen)
     obstacle.update()
 
@@ -242,18 +238,17 @@ while True:
     jump_height = 10
     fall_speed = 10
 
-    if k > 60:
-      screen.fill((255,255,255))
-      score_message = pixel_font.render(f'Your scored: {score}', False, (64,64,64))
-      score_message_rect = score_message.get_rect(center=(WIDTH/2, HEIGHT/2))
-      screen.blit(score_message, score_message_rect)
-    elif score == 0:
+    if score == 0:
       screen.fill((255,255,255))
       score_surf = pixel_font.render(f'Press UP or w to start', False, pygame.Color(64,64,64))
       score_surf_rect = score_surf.get_rect(center=(WIDTH/2, HEIGHT/2))
       screen.blit(score_surf, score_surf_rect)
     else:
-      k += 1
+      screen.fill((255,255,255))
+      score_message = pixel_font.render(f'Your scored: {score}', False, (64,64,64))
+      score_message_rect = score_message.get_rect(center=(WIDTH/2, HEIGHT/2))
+      screen.blit(score_message, score_message_rect)
+
 
   pygame.display.update()
 
