@@ -16,40 +16,42 @@ PHATNESS_INCREASE = 0.5
 class Player(pygame.sprite.Sprite):
   def __init__(self):
     super().__init__()
-    #player_jump = pygame.image.load("graphics/pigeon_jump1_fixed.png")
-    self.image = pygame.image.load("graphics/pigeon_mid1_fixed.png")
-    self.rect = self.image.get_rect(midbottom=(WIDTH // 2, HEIGHT//2))
+    self.player_dive_1 = pygame.image.load("graphics/pigeon/finished/pigeon_dive1_fixed.png").convert_alpha()
+    self.player_mid_1 = pygame.image.load("graphics/pigeon/finished/pigeon_mid1_fixed.png").convert_alpha()
+    self.player_jump_1 = pygame.image.load("graphics/pigeon/finished/pigeon_jump1_fixed.png").convert_alpha()
 
+    self.image = self.player_mid_1
+    self.rect = self.image.get_rect(midbottom=(WIDTH // 2, HEIGHT//2))
     self.gravity = 0
 
 
   def player_input(self):
     keys = pygame.key.get_pressed()
     if keys[pygame.K_UP] or keys[pygame.K_w]: 
+      self.image = self.player_jump_1
       self.gravity = -jump_height
     if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+      self.image = self.player_dive_1
       self.gravity = fall_speed
     
 
   def apply_gravity(self):
     global game_active
+    global original_player_y
     self.gravity += 0.5
     self.rect.y += self.gravity
-    if self.rect.bottom >= HEIGHT:
-      self.rect.bottom = HEIGHT
+
+    if self.rect.y > original_player_y:
+      self.image = self.player_mid_1
+      original_player_y = self.rect.y
+    if self.rect.bottom >= HEIGHT-31:
+      self.rect.bottom = HEIGHT-31
     if self.rect.top <= 0:
       game_active = False
-  
-  def floor_collision(self):
-    global game_active
-    if self.rect.bottom >= 569:
-      #game_active = False
-      self.rect.bottom = 569
 
   def update(self):
     self.player_input()
     self.apply_gravity()
-    self.floor_collision()
 
 #********************************************************************************************#
 
@@ -148,12 +150,11 @@ k = 0
 spawn_speed = 1400
 jump_height = 10
 fall_speed = 10
+original_player_y = 245
 
 #********************************************************************************************#
 
 # Other stuff goes here
-
-
 score_text_rect = display_score_text().get_rect(center=(WIDTH-120, 30))
 
 ground_surf = pygame.image.load('graphics/Scenes/default_scene/floor_fixed2.png').convert_alpha()
@@ -248,7 +249,6 @@ while True:
       score_message = pixel_font.render(f'Your scored: {score}', False, (64,64,64))
       score_message_rect = score_message.get_rect(center=(WIDTH/2, HEIGHT/2))
       screen.blit(score_message, score_message_rect)
-
 
   pygame.display.update()
 
