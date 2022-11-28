@@ -214,7 +214,7 @@ while True:
       screen.blit(ground_surf, (i*ground_surf.get_width()+scroll, HEIGHT-ground_surf.get_height()))
       i += 1
     
-    scroll -= 4
+    scroll -= 3
 
     if abs(scroll) > ground_surf.get_width():
       scroll = 0    
