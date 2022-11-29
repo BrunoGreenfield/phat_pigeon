@@ -37,13 +37,9 @@ class Player(pygame.sprite.Sprite):
 
   def apply_gravity(self):
     global game_active
-    global original_player_y
+
     self.gravity += 0.5
     self.rect.y += self.gravity
-
-    if self.rect.y > original_player_y:
-      self.image = self.player_mid_1
-      original_player_y = self.rect.y
     if self.rect.bottom >= HEIGHT-31:
       self.rect.bottom = HEIGHT-31
     if self.rect.top <= 0:
