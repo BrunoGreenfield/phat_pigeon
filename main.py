@@ -17,11 +17,11 @@ PHATNESS_INCREASE = 0.5
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.player_dive_1 = player_dive_1
-        self.player_mid_1 = player_mid_1
-        self.player_jump_1 = player_jump_1
+        self.player_dive = player_dive
+        self.player_mid = player_mid
+        self.player_jump = player_jump
 
-        self.image = self.player_mid_1
+        self.image = self.player_mid
         self.rect = self.image.get_rect(midbottom=(WIDTH // 2, HEIGHT // 2))
         self.gravity = 0
 
@@ -30,15 +30,15 @@ class Player(pygame.sprite.Sprite):
         mid_timer = pygame.USEREVENT + 3
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP] or keys[pygame.K_w]:
-            self.image = self.player_jump_1
+            self.image = self.player_jump
             self.gravity = -jump_height
-            pygame.time.set_timer(mid_timer, 400)
+            pygame.time.set_timer(mid_timer, 300)
         if keys[pygame.K_DOWN] or keys[pygame.K_s]:
-            self.image = self.player_dive_1
+            self.image = self.player_dive
             self.gravity = fall_speed
             pygame.time.set_timer(mid_timer, 200)
         if event.type == mid_timer:
-            self.image = self.player_mid_1
+            self.image = self.player_mid
 
     def apply_gravity(self):
         global game_active
@@ -110,11 +110,43 @@ def collision_obstacle():
 def collision_food():
     global jump_height
     global fall_speed
+    global phatness_level
+    global player_dive
+    global player_mid
+    global player_jump
+    global player_dive_list
+    global player_mid_list
+    global player_jump_list
     global PHATNESS_INCREASE
 
     if pygame.sprite.spritecollide(player.sprite, food, True):
         jump_height -= PHATNESS_INCREASE
         fall_speed += PHATNESS_INCREASE
+        player_dive_1 = pygame.image.load("graphics/pigeon/finished/pigeon_dive1_fixed.png").convert_alpha()
+        player_dive_2 = pygame.image.load("graphics/pigeon/finished/pigeon_dive2_fixed.png").convert_alpha()
+        player_dive_3 = pygame.image.load("graphics/pigeon/finished/pigeon_dive3_fixed.png").convert_alpha()
+        player_dive_4 = pygame.image.load("graphics/pigeon/finished/pigeon_dive4_fixed.png").convert_alpha()
+        player_dive_5 = pygame.image.load("graphics/pigeon/finished/pigeon_dive5_fixed.png").convert_alpha()
+        player_mid_1 = pygame.image.load("graphics/pigeon/finished/pigeon_mid1_fixed.png").convert_alpha()
+        player_mid_2 = pygame.image.load("graphics/pigeon/finished/pigeon_mid2_fixed.png").convert_alpha()
+        player_mid_3 = pygame.image.load("graphics/pigeon/finished/pigeon_mid3_fixed.png").convert_alpha()
+        player_mid_4 = pygame.image.load("graphics/pigeon/finished/pigeon_mid4_fixed.png").convert_alpha()
+        player_mid_5 = pygame.image.load("graphics/pigeon/finished/pigeon_mid5_fixed.png").convert_alpha()
+        player_jump_1 = pygame.image.load("graphics/pigeon/finished/pigeon_jump1_fixed.png").convert_alpha()
+        player_jump_2 = pygame.image.load("graphics/pigeon/finished/pigeon_jump2_fixed.png").convert_alpha()
+        player_jump_3 = pygame.image.load("graphics/pigeon/finished/pigeon_jump3_fixed.png").convert_alpha()
+        player_jump_4 = pygame.image.load("graphics/pigeon/finished/pigeon_jump4_fixed.png").convert_alpha()
+        player_jump_5 = pygame.image.load("graphics/pigeon/finished/pigeon_jump5_fixed.png").convert_alpha()
+
+        player_dive_list = [player_dive_1, player_dive_2, player_dive_3, player_dive_4, player_dive_5]
+        player_mid_list = [player_mid_1, player_mid_2, player_mid_3, player_mid_4, player_mid_5]
+        player_jump_list = [player_jump_1, player_jump_2, player_jump_3, player_jump_4, player_jump_5]
+
+        phatness_level += 1
+        player_dive = player_dive_list[phatness_level]
+        player_mid = player_mid_list[phatness_level]
+        player_jump = player_jump_list[phatness_level]
+
         return True
 
     else:
@@ -154,9 +186,31 @@ clock = pygame.time.Clock()
 pixel_font = pygame.font.Font('font/pixel.ttf', 24)
 ground_surf = pygame.image.load('graphics/Scenes/default_scene/floor_fixed2.png').convert_alpha()
 background_surf = pygame.image.load('graphics/Scenes/default_scene/backgroundL_fixed.png').convert_alpha()
-player_mid_1 = pygame.image.load("graphics/pigeon/finished/pigeon_mid1_fixed.png").convert_alpha()
-player_jump_1 = pygame.image.load("graphics/pigeon/finished/pigeon_jump1_fixed.png").convert_alpha()
 player_dive_1 = pygame.image.load("graphics/pigeon/finished/pigeon_dive1_fixed.png").convert_alpha()
+player_dive_2 = pygame.image.load("graphics/pigeon/finished/pigeon_dive2_fixed.png").convert_alpha()
+player_dive_3 = pygame.image.load("graphics/pigeon/finished/pigeon_dive3_fixed.png").convert_alpha()
+player_dive_4 = pygame.image.load("graphics/pigeon/finished/pigeon_dive4_fixed.png").convert_alpha()
+player_dive_5 = pygame.image.load("graphics/pigeon/finished/pigeon_dive5_fixed.png").convert_alpha()
+player_mid_1 = pygame.image.load("graphics/pigeon/finished/pigeon_mid1_fixed.png").convert_alpha()
+player_mid_2 = pygame.image.load("graphics/pigeon/finished/pigeon_mid2_fixed.png").convert_alpha()
+player_mid_3 = pygame.image.load("graphics/pigeon/finished/pigeon_mid3_fixed.png").convert_alpha()
+player_mid_4 = pygame.image.load("graphics/pigeon/finished/pigeon_mid4_fixed.png").convert_alpha()
+player_mid_5 = pygame.image.load("graphics/pigeon/finished/pigeon_mid5_fixed.png").convert_alpha()
+player_jump_1 = pygame.image.load("graphics/pigeon/finished/pigeon_jump1_fixed.png").convert_alpha()
+player_jump_2 = pygame.image.load("graphics/pigeon/finished/pigeon_jump2_fixed.png").convert_alpha()
+player_jump_3 = pygame.image.load("graphics/pigeon/finished/pigeon_jump3_fixed.png").convert_alpha()
+player_jump_4 = pygame.image.load("graphics/pigeon/finished/pigeon_jump4_fixed.png").convert_alpha()
+player_jump_5 = pygame.image.load("graphics/pigeon/finished/pigeon_jump5_fixed.png").convert_alpha()
+
+player_dive_list = [player_dive_1, player_dive_2, player_dive_3, player_dive_4, player_dive_5]
+player_mid_list = [player_mid_1, player_mid_2, player_mid_3, player_mid_4, player_mid_5]
+player_jump_list = [player_jump_1, player_jump_2, player_jump_3, player_jump_4, player_jump_5]
+
+phatness_level = 0
+player_dive = player_dive_list[phatness_level]
+player_mid = player_mid_list[phatness_level]
+player_jump = player_jump_list[phatness_level]
+
 start_time = 0
 game_active = False
 score = 0
