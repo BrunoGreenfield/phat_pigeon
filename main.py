@@ -17,9 +17,18 @@ PHATNESS_INCREASE = 0.5
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.player_dive = player_dive
-        self.player_mid = player_mid
-        self.player_jump = player_jump
+        self.player_dive_list = [player_dive_1, player_dive_2, player_dive_3, player_dive_4, player_dive_5]
+        self.player_mid_list = [player_mid_1, player_mid_2, player_mid_3, player_mid_4, player_mid_5]
+        self.player_jump_list = [player_jump_1, player_jump_2, player_jump_3, player_jump_4, player_jump_5]
+
+        phatness_level = 0
+        self.player_dive = player_dive_list[phatness_level]
+        self.player_mid = player_mid_list[phatness_level]
+        self.player_jump = player_jump_list[phatness_level]
+
+        self.jump_height = jump_height
+        self.fall_speed = fall_speed
+        self.phatness_level = phatness_level
 
         self.image = self.player_mid
         self.rect = self.image.get_rect(midbottom=(WIDTH // 2, HEIGHT // 2))
@@ -40,15 +49,15 @@ class Player(pygame.sprite.Sprite):
         if event.type == mid_timer:
             self.image = self.player_mid
 
-    def collision_food():
-        if pygame.sprite.spritecollide(player.sprite, food, True):
-            jump_height -= PHATNESS_INCREASE
-            fall_speed += PHATNESS_INCREASE
+    def collision_food(self):
+        if pygame.sprite.spritecollide(self, food, True):
+            self.jump_height -= PHATNESS_INCREASE
+            self.fall_speed += PHATNESS_INCREASE
 
-            phatness_level += 1
-            player_dive = player_dive_list[phatness_level]
-            player_mid = player_mid_list[phatness_level]
-            player_jump = player_jump_list[phatness_level]
+            self.phatness_level += 1
+            self.player_dive = self.player_dive_list[phatness_level]
+            self.player_mid = self.player_mid_list[phatness_level]
+            self.player_jump = self.player_jump_list[phatness_level]
 
             return True
 
@@ -67,6 +76,7 @@ class Player(pygame.sprite.Sprite):
 
     def update(self):
         self.player_input()
+        self.collision_food()
         self.apply_gravity()
 
 
@@ -121,10 +131,6 @@ def collision_obstacle():
     else:
         return True
 
-
-
-
-
 # ********************************************************************************************#
 
 # Functions
@@ -178,10 +184,7 @@ player_dive_list = [player_dive_1, player_dive_2, player_dive_3, player_dive_4, 
 player_mid_list = [player_mid_1, player_mid_2, player_mid_3, player_mid_4, player_mid_5]
 player_jump_list = [player_jump_1, player_jump_2, player_jump_3, player_jump_4, player_jump_5]
 
-phatness_level = 0
-player_dive = player_dive_list[phatness_level]
-player_mid = player_mid_list[phatness_level]
-player_jump = player_jump_list[phatness_level]
+
 
 start_time = 0
 game_active = False
@@ -252,7 +255,6 @@ while True:
     if game_active:
         screen.fill((0, 0, 0))
         display_score()
-        collision_food()
         i = 0
         while i < tiles:
             screen.blit(background_surf, (i * background_surf.get_width() + scroll, 0))
