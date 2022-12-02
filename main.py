@@ -8,7 +8,7 @@ from random import randint
 FRAME_RATE = 60
 HEIGHT = 600
 WIDTH = 1200
-PHATNESS_INCREASE = 0.5
+PHATNESS_INCREASE = 1.25
 
 
 # ********************************************************************************************#
@@ -17,11 +17,10 @@ PHATNESS_INCREASE = 0.5
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.player_dive_list = [player_dive_1, player_dive_2, player_dive_3, player_dive_4, player_dive_5]
-        self.player_mid_list = [player_mid_1, player_mid_2, player_mid_3, player_mid_4, player_mid_5]
-        self.player_jump_list = [player_jump_1, player_jump_2, player_jump_3, player_jump_4, player_jump_5]
-
-        phatness_level = 0
+        self.player_dive_list = player_dive_list
+        self.player_mid_list = player_mid_list
+        self.player_jump_list = player_jump_list
+        self.phatness_level = phatness_level
         self.player_dive = player_dive_list[phatness_level]
         self.player_mid = player_mid_list[phatness_level]
         self.player_jump = player_jump_list[phatness_level]
@@ -40,11 +39,11 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP] or keys[pygame.K_w]:
             self.image = self.player_jump
-            self.gravity = -jump_height
+            self.gravity = -self.jump_height
             pygame.time.set_timer(mid_timer, 300)
         if keys[pygame.K_DOWN] or keys[pygame.K_s]:
             self.image = self.player_dive
-            self.gravity = fall_speed
+            self.gravity = self.fall_speed
             pygame.time.set_timer(mid_timer, 200)
         if event.type == mid_timer:
             self.image = self.player_mid
@@ -53,12 +52,17 @@ class Player(pygame.sprite.Sprite):
         if pygame.sprite.spritecollide(self, food, True):
             self.jump_height -= PHATNESS_INCREASE
             self.fall_speed += PHATNESS_INCREASE
-
-            self.phatness_level += 1
-            self.player_dive = self.player_dive_list[phatness_level]
-            self.player_mid = self.player_mid_list[phatness_level]
-            self.player_jump = self.player_jump_list[phatness_level]
-
+            state = 0
+            if state == 0:
+                self.phatness_level += 1
+                state += 1
+            else:
+                state -=1
+            if self.phatness_level > 4:
+                self.phatness_level = 4
+            self.player_dive = self.player_dive_list[self.phatness_level]
+            self.player_mid = self.player_mid_list[self.phatness_level]
+            self.player_jump = self.player_jump_list[self.phatness_level]
             return True
 
         else:
@@ -184,7 +188,7 @@ player_dive_list = [player_dive_1, player_dive_2, player_dive_3, player_dive_4, 
 player_mid_list = [player_mid_1, player_mid_2, player_mid_3, player_mid_4, player_mid_5]
 player_jump_list = [player_jump_1, player_jump_2, player_jump_3, player_jump_4, player_jump_5]
 
-
+phatness_level = 0
 
 start_time = 0
 game_active = False
@@ -243,7 +247,6 @@ while True:
             if (event.type == pygame.KEYDOWN and event.key == pygame.K_UP) or (
                     event.type == pygame.KEYDOWN and event.key == pygame.K_w):
                 game_active = True
-                
                 phatness_level = 0
                 player.empty()
                 player.add(Player())
