@@ -1,6 +1,7 @@
 # phat pigeon :D
 
 import pygame, math
+import random
 from sys import exit
 from random import randint
 
@@ -24,7 +25,6 @@ class Player(pygame.sprite.Sprite):
         self.player_dive = player_dive_list[phatness_level]
         self.player_mid = player_mid_list[phatness_level]
         self.player_jump = player_jump_list[phatness_level]
-
         self.jump_height = jump_height
         self.fall_speed = fall_speed
         self.phatness_level = phatness_level
@@ -207,6 +207,9 @@ score_text_rect = display_score_text().get_rect(center=(WIDTH - 120, 30))
 
 tiles = math.ceil(WIDTH / background_surf.get_width()) + 1
 
+# [location, velocity, timer]
+particles = []
+
 # ********************************************************************************************#
 
 # Groups
@@ -281,6 +284,29 @@ while True:
 
         player.draw(screen)
         player.update()
+
+        particles.append([[250, 250, 10, 10], [random.randint(0, 20)/10 - 1, -2], random.randint(4,6)])
+
+        for particle in particles:
+            randomnum1 = random.randint(0, 1)
+            randomnum2 = random.randint(0, 1)
+            if randomnum1 == 0:
+                particle[0][0] += particle[1][0]
+            else:
+                particle[0][0] -= particle[1][0]
+            if randomnum2 == 0:
+                particle[0][1] += particle[1][1]
+            else:
+                particle[0][1] -= particle[1][1]
+            particle[2] -= 0.1
+            particle[1][1] += 0.1
+
+            pygame.draw.rect(screen, (255, 0, 255), particle[0], 10)
+
+            if particle[2] <= 0:
+                particles.remove(particle)
+
+            
 
         screen.blit(display_score_text(), score_text_rect)
     else:
