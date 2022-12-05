@@ -207,7 +207,7 @@ score_text_rect = display_score_text().get_rect(center=(WIDTH - 120, 30))
 
 tiles = math.ceil(WIDTH / background_surf.get_width()) + 1
 
-# [location, velocity, timer]
+# [location, velocity, timer, degreez]
 particles = []
 
 # ********************************************************************************************#
@@ -285,22 +285,28 @@ while True:
         player.draw(screen)
         player.update()
 
-        particles.append([[250, 250, 10, 10], [random.randint(0, 20)/10 - 1, -2], random.randint(4,6)])
+        for i in range(20):
+            particles.append([[250, 250, 10, 10], [random.randint(0, 20)/10 - 1, -2], random.randint(4,6), [random.randint(-10, 10), random.randint(-10,10)]])
 
         for particle in particles:
-            randomnum1 = random.randint(0, 1)
-            randomnum2 = random.randint(0, 1)
-            if randomnum1 == 0:
-                particle[0][0] += particle[1][0]
-            else:
-                particle[0][0] -= particle[1][0]
-            if randomnum2 == 0:
-                particle[0][1] += particle[1][1]
-            else:
-                particle[0][1] -= particle[1][1]
-            particle[2] -= 0.1
+            particle[0][0] += particle[3][0]
+            particle[0][1] += particle[3][1]
+            
+            if particle[3][0] > 0:
+                particle[3][0] -= 0.1
+            elif particle[3][0] < 0:
+                particle[3][0] += 0.1
+            
+            if particle[3][1] > 0:
+                particle[3][1] -= 0.1
+            if particle[3][1] < 0:
+                particle[3][1] += 0.15
 
-            pygame.draw.rect(screen, (255, 0, 255), particle[0], 10)
+            particle[3][1] += 0.2
+
+            pygame.draw.rect(screen, (random.choice(['red','green','blue'])), particle[0], 10)
+
+            particle[2] -= 0.2
 
             if particle[2] <= 0:
                 particles.remove(particle)
