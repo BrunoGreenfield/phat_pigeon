@@ -299,7 +299,6 @@ while True:
             else:
                 particle[0][1] -= particle[1][1]
             particle[2] -= 0.1
-            particle[1][1] += 0.1
 
             pygame.draw.rect(screen, (255, 0, 255), particle[0], 10)
 
