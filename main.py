@@ -68,6 +68,16 @@ class Player(pygame.sprite.Sprite):
         else:
             return False
 
+    global collision_obstacle
+    def collision_obstacle(self):
+        global collision_obstacle_var
+        if pygame.sprite.spritecollide(self, obstacle, True):
+            pigeon_death(player.sprite.rect.x, player.sprite.rect.y)
+            self.kill()
+            collision_obstacle_var = True
+        else:
+            collision_obstacle_var = False
+
     def apply_gravity(self):
         global game_active
 
@@ -81,6 +91,7 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         self.player_input()
         self.collision_food()
+        self.collision_obstacle()
         self.apply_gravity()
 
 
@@ -114,7 +125,6 @@ class Food(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(midbottom=(WIDTH, HEIGHT - randint(31, HEIGHT - 60)))
 
     def destroy(self):
-        global food_collision
         if self.rect.x <= -60:
             self.kill()
         if pygame.sprite.spritecollide(self, obstacle, False):
@@ -124,20 +134,32 @@ class Food(pygame.sprite.Sprite):
         self.rect.x -= 4
         self.destroy()
 
-
-# ********************************************************************************************#
-
-# Collisions
-def collision_obstacle():
-    if pygame.sprite.spritecollide(player.sprite, obstacle, False):
-        obstacle.empty()
-        return False  # This needs to be false to stop the game
-    else:
-        return True
-
 # ********************************************************************************************#
 
 # Functions
+
+def move_background():
+    global scroll
+
+    i = 0
+    while i < tiles:
+        screen.blit(background_surf, (i * background_surf.get_width() + scroll, 0))
+        screen.blit(ground_surf, (i * ground_surf.get_width() + scroll, HEIGHT - ground_surf.get_height()))
+        i += 1
+
+    scroll -= 3
+
+    if abs(scroll) > ground_surf.get_width():
+        scroll = 0
+
+def pigeon_death(locationX, locationY):
+    for i in range(50):
+        square_size = random.randint(5, 30)
+        particles.append([[locationX, locationY, square_size, square_size], 
+                        random.randint(4,6), 
+                        [random.randint(-10, 10), random.randint(-10,10)], 
+                        random.choice(['#ff8800','#ff5e00','#ff4400','#ff0000','#ffa200','#ffc800','#ffea00'])])
+
 def update_fps():
     fps = str(int(clock.get_fps()))
     fps_text = pixel_font.render(f'FPS: {fps}', False, pygame.Color(64, 64, 64))
@@ -207,7 +229,7 @@ score_text_rect = display_score_text().get_rect(center=(WIDTH - 120, 30))
 
 tiles = math.ceil(WIDTH / background_surf.get_width()) + 1
 
-# [location, velocity, timer, degreez]
+# [location, velocity, timer, idek anymore]
 particles = []
 
 # ********************************************************************************************#
@@ -261,16 +283,8 @@ while True:
     if game_active:
         screen.fill((0, 0, 0))
         display_score()
-        i = 0
-        while i < tiles:
-            screen.blit(background_surf, (i * background_surf.get_width() + scroll, 0))
-            screen.blit(ground_surf, (i * ground_surf.get_width() + scroll, HEIGHT - ground_surf.get_height()))
-            i += 1
-
-        scroll -= 3
-
-        if abs(scroll) > ground_surf.get_width():
-            scroll = 0
+        if collision_obstacle_var == False:
+            move_background()
 
             # screen.fill((255,255,255))
         screen.blit(update_fps(), (0, 0))
@@ -280,37 +294,33 @@ while True:
         obstacle.draw(screen)
         obstacle.update()
 
-        game_active = collision_obstacle()
-
         player.draw(screen)
         player.update()
 
-        for i in range(20):
-            particles.append([[250, 250, 10, 10], [random.randint(0, 20)/10 - 1, -2], random.randint(4,6), [random.randint(-10, 10), random.randint(-10,10)]])
+        num = random.randint(0, 100)
 
         for particle in particles:
-            particle[0][0] += particle[3][0]
-            particle[0][1] += particle[3][1]
+            particle[0][0] += particle[2][0]
+            particle[0][1] += particle[2][1]
             
-            if particle[3][0] > 0:
-                particle[3][0] -= 0.1
-            elif particle[3][0] < 0:
-                particle[3][0] += 0.1
+            if particle[2][0] > 0:
+                particle[2][0] -= 0.1
+            elif particle[2][0] < 0:
+                particle[2][0] += 0.1
             
-            if particle[3][1] > 0:
-                particle[3][1] -= 0.1
-            if particle[3][1] < 0:
-                particle[3][1] += 0.15
+            if particle[2][1] > 0:
+                particle[2][1] -= 0.1
+            if particle[2][1] < 0:
+                particle[2][1] += 0.15
 
-            particle[3][1] += 0.2
+            particle[2][1] += 0.2
 
-            pygame.draw.rect(screen, (random.choice(['red','green','blue'])), particle[0], 10)
+            pygame.draw.rect(screen, particle[3], particle[0], False)
 
-            particle[2] -= 0.2
+            particle[1] -= 0.01
 
-            if particle[2] <= 0:
+            if particle[1] <= 0:
                 particles.remove(particle)
-
             
 
         screen.blit(display_score_text(), score_text_rect)
