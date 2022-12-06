@@ -50,6 +50,7 @@ class Player(pygame.sprite.Sprite):
 
     def collision_food(self):
         if pygame.sprite.spritecollide(self, food, True):
+            pigeon_death(self.rect.x, self.rect.y)
             self.jump_height -= PHATNESS_INCREASE
             self.fall_speed += PHATNESS_INCREASE
             state = 0
@@ -68,16 +69,6 @@ class Player(pygame.sprite.Sprite):
         else:
             return False
 
-    global collision_obstacle
-    def collision_obstacle(self):
-        global collision_obstacle_var
-        if pygame.sprite.spritecollide(self, obstacle, True):
-            pigeon_death(player.sprite.rect.x, player.sprite.rect.y)
-            self.kill()
-            collision_obstacle_var = True
-        else:
-            collision_obstacle_var = False
-
     def apply_gravity(self):
         global game_active
 
@@ -91,7 +82,6 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         self.player_input()
         self.collision_food()
-        self.collision_obstacle()
         self.apply_gravity()
 
 
@@ -138,14 +128,22 @@ class Food(pygame.sprite.Sprite):
 
 # Functions
 
+def collision_obstacle():
+    if pygame.sprite.spritecollide(player.sprite,obstacle, True):
+        pigeon_death(player.sprite.rect.x, player.sprite.rect.y)
+        return True
+    else:
+        return False
+
 def move_background():
     global scroll
+    global scroll_num
 
-    i = 0
-    while i < tiles:
-        screen.blit(background_surf, (i * background_surf.get_width() + scroll, 0))
-        screen.blit(ground_surf, (i * ground_surf.get_width() + scroll, HEIGHT - ground_surf.get_height()))
-        i += 1
+    scroll_num = 0
+    while scroll_num < tiles:
+        screen.blit(background_surf, (scroll_num * background_surf.get_width() + scroll, 0))
+        screen.blit(ground_surf, (scroll_num * ground_surf.get_width() + scroll, HEIGHT - ground_surf.get_height()))
+        scroll_num += 1
 
     scroll -= 3
 
@@ -175,6 +173,30 @@ def display_score_text():
     score_text = pixel_font.render(f'Score: {display_score()}', False, pygame.Color(64, 64, 64))
     return score_text
 
+def particle_update():
+    for particle in particles:
+        particle[0][0] += particle[2][0]
+        particle[0][1] += particle[2][1]
+        
+        if particle[2][0] > 0:
+            particle[2][0] -= 0.1
+        elif particle[2][0] < 0:
+            particle[2][0] += 0.1
+        
+        if particle[2][1] > 0:
+            particle[2][1] -= 0.1
+        if particle[2][1] < 0:
+            particle[2][1] += 0.15
+
+        #particle[0][0] -= scroll
+        particle[2][1] += 0.2
+
+        pygame.draw.rect(screen, particle[3], particle[0], False)
+
+        particle[1] -= 0.01
+
+        if particle[1] <= 0:
+            particles.remove(particle)
 
 # ********************************************************************************************#
 
@@ -216,6 +238,7 @@ start_time = 0
 game_active = False
 score = 0
 scroll = 0
+scroll_num = 0
 k = 0
 spawn_speed = 1400
 jump_height = 10
@@ -265,8 +288,6 @@ while True:
                 obstacle.add(Obstacle())
             if event.type == food_timer:
                 food.add(Food())
-            # if event.type == mid_timer:
-            #     player.sprite.image = player_mid_1
 
         else:
             if (event.type == pygame.KEYDOWN and event.key == pygame.K_UP) or (
@@ -283,8 +304,9 @@ while True:
     if game_active:
         screen.fill((0, 0, 0))
         display_score()
-        if collision_obstacle_var == False:
-            move_background()
+        move_background()
+        collision_obstacle()
+
 
             # screen.fill((255,255,255))
         screen.blit(update_fps(), (0, 0))
@@ -297,31 +319,9 @@ while True:
         player.draw(screen)
         player.update()
 
-        num = random.randint(0, 100)
+        num = random.randint(0, 100)            
 
-        for particle in particles:
-            particle[0][0] += particle[2][0]
-            particle[0][1] += particle[2][1]
-            
-            if particle[2][0] > 0:
-                particle[2][0] -= 0.1
-            elif particle[2][0] < 0:
-                particle[2][0] += 0.1
-            
-            if particle[2][1] > 0:
-                particle[2][1] -= 0.1
-            if particle[2][1] < 0:
-                particle[2][1] += 0.15
-
-            particle[2][1] += 0.2
-
-            pygame.draw.rect(screen, particle[3], particle[0], False)
-
-            particle[1] -= 0.01
-
-            if particle[1] <= 0:
-                particles.remove(particle)
-            
+        particle_update()
 
         screen.blit(display_score_text(), score_text_rect)
     else:
