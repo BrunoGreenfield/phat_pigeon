@@ -151,7 +151,7 @@ def move_background():
         scroll = 0
 
 def pigeon_death(locationX, locationY):
-    for i in range(50):
+    for i in range(30):
         square_size = random.randint(5, 30)
         particles.append([[locationX, locationY, square_size, square_size], 
                         random.randint(4,6), 
@@ -244,6 +244,7 @@ spawn_speed = 1400
 jump_height = 10
 fall_speed = 10
 original_player_y = 245
+pigeon_deadness= False
 
 # ********************************************************************************************#
 
@@ -304,7 +305,11 @@ while True:
     if game_active:
         screen.fill((0, 0, 0))
         display_score()
-        move_background()
+        if pigeon_deadness == False:
+            move_background()
+            player.update()
+        else:
+            pass
         collision_obstacle()
 
 
@@ -317,7 +322,6 @@ while True:
         obstacle.update()
 
         player.draw(screen)
-        player.update()
 
         num = random.randint(0, 100)            
 
