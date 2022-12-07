@@ -169,11 +169,11 @@ def pigeon_death(locationX, locationY):
         particles.append([[locationX, locationY, square_size, square_size], 
                         random.randint(4,6), 
                         [random.randint(-10, 10), random.randint(-10,10)], 
-                        random.choice(['#ff8800','#ff5e00','#ff4400','#ff0000','#ffa200','#ffc800','#ffea00'])])
+                        random.choice([(255,136,0),(255,94,0),(255,68,0),(255,0,0),(255,162,0),(255,200,0),(255,234,0)])])
 
 def update_fps():
     fps = str(int(clock.get_fps()))
-    fps_text = pixel_font.render(f'FPS: {fps}', False, pygame.Color(64, 64, 64))
+    fps_text = pixel_font.render('FPS: {}'.format(fps), False, pygame.Color(64, 64, 64))
     return fps_text
 
 
@@ -183,7 +183,7 @@ def display_score():
 
 
 def display_score_text():
-    score_text = pixel_font.render(f'Score: {display_score()}', False, pygame.Color(64, 64, 64))
+    score_text = pixel_font.render('Score: {}'.format(display_score()), False, pygame.Color(64, 64, 64))
     return score_text
 
 def particle_update():
@@ -344,12 +344,12 @@ while True:
 
         if score == 0:
             screen.fill((255, 255, 255))
-            score_surf = pixel_font.render(f'Press UP or w to start', False, pygame.Color(64, 64, 64))
+            score_surf = pixel_font.render('Press UP or w to start', False, pygame.Color(64, 64, 64))
             score_surf_rect = score_surf.get_rect(center=(WIDTH / 2, HEIGHT / 2))
             screen.blit(score_surf, score_surf_rect)
         else:
             screen.fill((255, 255, 255))
-            score_message = pixel_font.render(f'Your scored: {score}', False, (64, 64, 64))
+            score_message = pixel_font.render('Your scored: {}'.format(score), False, (64, 64, 64))
             score_message_rect = score_message.get_rect(center=(WIDTH / 2, HEIGHT / 2))
             screen.blit(score_message, score_message_rect)
 
