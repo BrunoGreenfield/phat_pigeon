@@ -28,6 +28,8 @@ class Player(pygame.sprite.Sprite):
         self.jump_height = jump_height
         self.fall_speed = fall_speed
         self.phatness_level = phatness_level
+        self.jump_sound = pygame.mixer.Sound("audio/jump1.wav")
+        self.jump_sound.set_volume(0.3)
 
         self.image = self.player_mid
         self.rect = self.image.get_rect(midbottom=(WIDTH // 2, HEIGHT // 2))
@@ -39,6 +41,7 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP] or keys[pygame.K_w]:
             self.image = self.player_jump
+            self.jump_sound.play()
             self.gravity = -self.jump_height
             pygame.time.set_timer(mid_timer, 300)
         if keys[pygame.K_DOWN] or keys[pygame.K_s]:
@@ -64,11 +67,20 @@ class Player(pygame.sprite.Sprite):
             self.player_dive = self.player_dive_list[self.phatness_level]
             self.player_mid = self.player_mid_list[self.phatness_level]
             self.player_jump = self.player_jump_list[self.phatness_level]
+            self.rect = self.image.get_rect(topleft=(self.rect.x, self.rect.y))
             return True
 
         else:
             return False
 
+    def collision_obstacle(self):
+        global game_active
+        if pygame.sprite.spritecollide(self, obstacle, False):
+            pigeon_death(self.rect.x, self.rect.y)
+            self.kill()
+        else:
+            move_background()
+    
     def apply_gravity(self):
         global game_active
 
@@ -80,6 +92,7 @@ class Player(pygame.sprite.Sprite):
             game_active = False
 
     def update(self):
+        self.collision_obstacle()
         self.player_input()
         self.collision_food()
         self.apply_gravity()
@@ -91,8 +104,8 @@ class Player(pygame.sprite.Sprite):
 class Obstacle(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.Surface((60, 60))
-        self.image.fill((0, 255, 0))
+        self.image = random.choice([pygame.image.load("graphics/obstacles/finished/landscape_props.png"),
+                                    pygame.image.load("graphics/obstacles/finished/portrait.png")])
         self.rect = self.image.get_rect(midbottom=(WIDTH, HEIGHT - randint(31, HEIGHT - 60)))
 
     def destroy(self):
@@ -110,8 +123,8 @@ class Obstacle(pygame.sprite.Sprite):
 class Food(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.Surface((60, 60))
-        self.image.fill((0, 0, 255))
+        self.image = random.choice([pygame.image.load("graphics/food/finished/burger.png"),
+                                    pygame.image.load("graphics/food/finished/chips.png")])
         self.rect = self.image.get_rect(midbottom=(WIDTH, HEIGHT - randint(31, HEIGHT - 60)))
 
     def destroy(self):
@@ -128,12 +141,12 @@ class Food(pygame.sprite.Sprite):
 
 # Functions
 
-def collision_obstacle():
-    if pygame.sprite.spritecollide(player.sprite,obstacle, True):
-        pigeon_death(player.sprite.rect.x, player.sprite.rect.y)
-        return True
-    else:
-        return False
+# def collision_obstacle():
+#     if pygame.sprite.spritecollide(player.sprite,obstacle, True):
+#         pigeon_death(player.sprite.rect.x, player.sprite.rect.y)
+#         return True
+#     else:
+#         return False
 
 def move_background():
     global scroll
@@ -304,13 +317,11 @@ while True:
 
     if game_active:
         screen.fill((0, 0, 0))
+        player.update()
+        player.draw(screen)
+
         display_score()
-        if pigeon_deadness == False:
-            move_background()
-            player.update()
-        else:
-            pass
-        collision_obstacle()
+        #collision_obstacle()
 
 
             # screen.fill((255,255,255))
@@ -321,7 +332,6 @@ while True:
         obstacle.draw(screen)
         obstacle.update()
 
-        player.draw(screen)
 
         num = random.randint(0, 100)            
 
