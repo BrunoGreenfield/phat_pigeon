@@ -352,7 +352,7 @@ while True:
 
         display_score()
     
-        #collision_obstacle()
+        # collision_obstacle()
         # screen.fill((255,255,255))
     
         screen.blit(update_fps(), (0, 0))
