@@ -216,7 +216,6 @@ def display_score_text():
     score_text = pixel_font.render(f'Score: {display_score()}', False, pygame.Color(64, 64, 64))
     return score_text
 
-
 def particle_update():
     for particle in particles:
         particle[0][0] += particle[2][0]
@@ -254,6 +253,8 @@ pygame.display.set_caption("PHAT PIGEON")
 # Variables
 clock = pygame.time.Clock()
 pixel_font = pygame.font.Font('font/pixel.ttf', 24)
+pixel_font_small = pygame.font.Font('font/pixel.ttf', 16)
+pixel_font_tiny = pygame.font.Font('font/pixel.ttf', 12)
 ground_surf = pygame.image.load('graphics/Scenes/default_scene/floor_fixed2.png').convert_alpha()
 background_surf = pygame.image.load('graphics/Scenes/default_scene/backgroundL_fixed.png').convert_alpha()
 player_dive_1 = pygame.image.load("graphics/pigeon/finished/pigeon_dive1_fixed.png").convert_alpha()
@@ -271,6 +272,27 @@ player_jump_2 = pygame.image.load("graphics/pigeon/finished/pigeon_jump2_fixed.p
 player_jump_3 = pygame.image.load("graphics/pigeon/finished/pigeon_jump3_fixed.png").convert_alpha()
 player_jump_4 = pygame.image.load("graphics/pigeon/finished/pigeon_jump4_fixed.png").convert_alpha()
 player_jump_5 = pygame.image.load("graphics/pigeon/finished/pigeon_jump5_fixed.png").convert_alpha()
+player_mid_3_mainscreen = pygame.image.load("graphics/pigeon/finished/pigeon_mid3_fixed_mainscreen.png").convert_alpha()
+
+score_surf = pixel_font.render(f'Welcome to Phat pigeon... Python Edition!', False, pygame.Color('#d18100'))
+score_surf_rect = score_surf.get_rect(center=(WIDTH / 2, 75))
+instructions_surf = pixel_font_small.render('Press (up) or (W) to start and jump', False, pygame.Color('#b8b8b8'))
+start_height = 125
+instructions_surf_instu = pixel_font.render('How to play:', False, pygame.Color('#b8b8b8'))
+instructions_surf_instu_rect = instructions_surf_instu.get_rect(center=(WIDTH / 2, HEIGHT-start_height-50))
+instructions_surf_rect = instructions_surf.get_rect(center=(WIDTH / 2, HEIGHT-start_height))
+instructions_surf_2 = pixel_font_small.render('Press (down) or (S) to dive down', False, pygame.Color('#b8b8b8'))
+instructions_surf_2_rect = instructions_surf_2.get_rect(center=(WIDTH / 2, HEIGHT-start_height+25))
+instructions_surf_3 = pixel_font_small.render('Avoid obstacles as they kill you instantly', False, pygame.Color('#b8b8b8'))
+instructions_surf_3_rect = instructions_surf_3.get_rect(center=(WIDTH/2, HEIGHT-start_height+50))
+instructions_surf_4 = pixel_font_small.render('Try to avoid food when possible as it increases your weight and decreases your jump ability', False, pygame.Color('#b8b8b8'))
+instructions_surf_4_rect = instructions_surf_4.get_rect(center=(WIDTH/2, HEIGHT-start_height+75))
+have_fun_surf = pixel_font_small.render('Have fun!', False, pygame.Color('#b8b8b8'))
+have_fun_surf_rect  = have_fun_surf.get_rect(center=(WIDTH/2, HEIGHT-start_height+100))
+art_credit = pixel_font_tiny.render('Art credit: @lg_purearts', False, pygame.Color('#b8b8b8'))
+art_credit_rect = art_credit.get_rect(bottomleft=(3, HEIGHT-3))
+me_plug = pixel_font_tiny.render('Programmed with blood, sweat and tears by me! (Bruno Greenfield (age: 15 years))', False, pygame.Color('#8cc9ff'))
+me_plug_rect = me_plug.get_rect(center=(WIDTH/2, 385))
 
 player_dive_list = [player_dive_1, player_dive_2, player_dive_3, player_dive_4, player_dive_5]
 player_mid_list = [player_mid_1, player_mid_2, player_mid_3, player_mid_4, player_mid_5]
@@ -371,14 +393,22 @@ while True:
 
         if score == 0:
             screen.fill((64, 64, 64))
-            particle_update()
-            score_surf = pixel_font.render(f'Press UP or w to start', False, pygame.Color('white'))
-            score_surf_rect = score_surf.get_rect(center=(WIDTH / 2, HEIGHT / 2))
+            pygame.draw.rect(screen, ('#387038'), (0, HEIGHT-200, WIDTH, HEIGHT))
+            screen.blit(player_mid_3_mainscreen, player_mid_3_mainscreen.get_rect(center = (WIDTH / 2, HEIGHT/2.4)))
             screen.blit(score_surf, score_surf_rect)
+            screen.blit(instructions_surf_instu, instructions_surf_instu_rect)
+            screen.blit(instructions_surf, instructions_surf_rect)
+            screen.blit(instructions_surf_2, instructions_surf_2_rect)
+            screen.blit(instructions_surf_3, instructions_surf_3_rect)
+            screen.blit(instructions_surf_4, instructions_surf_4_rect)
+            screen.blit(have_fun_surf, have_fun_surf_rect)
+            screen.blit(art_credit, art_credit_rect)
+            screen.blit(me_plug, me_plug_rect)
+            particle_update()
         else:
             screen.fill((64, 64, 64))
             particle_update()
-            score_message = pixel_font.render(f'Your score: {score}', False, ('white'))
+            score_message = pixel_font.render(f'Your score: {score}', False, ('#b8b8b8'))
             score_message_rect = score_message.get_rect(center=(WIDTH / 2, HEIGHT / 2))
             screen.blit(score_message, score_message_rect)
 
