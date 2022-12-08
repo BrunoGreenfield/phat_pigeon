@@ -27,9 +27,10 @@ class Player(pygame.sprite.Sprite):
         self.player_jump = player_jump_list[phatness_level]
         self.jump_height = jump_height
         self.fall_speed = fall_speed
+        self.dedstate = 0
         self.phatness_level = phatness_level
         self.jump_sound = pygame.mixer.Sound("audio/jump2.wav")
-        self.jump_sound.set_volume(0.15)
+        self.jump_sound.set_volume(0.1)
         self.dive_sound = pygame.mixer.Sound("audio/dive1.wav")
         self.dive_sound.set_volume(0.3)
         self.eat_sound = pygame.mixer.Sound("audio/eat1.wav")
@@ -59,12 +60,14 @@ class Player(pygame.sprite.Sprite):
             self.image = self.player_mid
 
     def collision_food(self):
+        global game_active
         if pygame.sprite.spritecollide(self, food, True):
-            pigeon_death(self.rect.x, self.rect.y)
+            pigeon_eat(self.rect.x, self.rect.y)
             self.eat_sound.play()
             self.jump_height -= PHATNESS_INCREASE
             self.fall_speed += PHATNESS_INCREASE
             state = 0
+            self.dedstate +=1
             if state == 0:
                 self.phatness_level += 1
                 state += 1
@@ -72,6 +75,9 @@ class Player(pygame.sprite.Sprite):
                 state -=1
             if self.phatness_level > 4:
                 self.phatness_level = 4
+            if self.dedstate == 8:
+                pigeon_death(self.rect.x, self.rect.y)
+                game_active = False
             self.player_dive = self.player_dive_list[self.phatness_level]
             self.player_mid = self.player_mid_list[self.phatness_level]
             self.player_jump = self.player_jump_list[self.phatness_level]
@@ -83,7 +89,6 @@ class Player(pygame.sprite.Sprite):
 
     def collision_obstacle(self):
         global game_active
-        global pigeon_deadness
         if pygame.sprite.spritecollide(self, obstacle, False):
             pigeon_death(self.rect.x, self.rect.y)
             self.death_sound.play()
@@ -98,8 +103,12 @@ class Player(pygame.sprite.Sprite):
         self.gravity += 0.5
         self.rect.y += self.gravity
         if self.rect.bottom >= HEIGHT - 31:
-            self.rect.bottom = HEIGHT - 31
+            self.death_sound.play()
+            pigeon_death(self.rect.x, self.rect.y)
+            game_active = False
         if self.rect.top <= 0:
+            pigeon_death(self.rect.x, self.rect.y)
+            self.death_sound.play()
             game_active = False
 
     def update(self):
@@ -175,12 +184,20 @@ def move_background():
     if abs(scroll) > ground_surf.get_width():
         scroll = 0
 
+def pigeon_eat(locationX, locationY):
+    for i in range(30):
+        square_size = random.randint(3,20)
+        particles.append([[locationX, locationY, square_size, square_size],
+                        random.randint(4,6),
+                        [(random.randint(-80, 80)/4), (random.randint(-80,80)/4)],
+                        random.choice(['#408245', '#0bde1d', '#f2ff00'])])
+
 def pigeon_death(locationX, locationY):
-    for i in range(3000):
+    for i in range(1000):
         square_size = random.randint(5, 70)
         particles.append([[locationX, locationY, square_size, square_size], 
                         random.randint(4,6), 
-                        [(random.randint(-80, 80)/2), (random.randint(-80,80)/2)], 
+                        [(random.randint(-80, 80)/6), (random.randint(-80,80)/6)], 
                         random.choice(['#ff8800','#ff5e00','#ff4400','#ff0000','#ffa200','#ffc800','#ffea00','#000000','#383636','#a3a3a3'])])
 
 
@@ -334,15 +351,11 @@ while True:
         player.draw(screen)
 
         display_score()
+    
         #collision_obstacle()
-
-
-            # screen.fill((255,255,255))
+        # screen.fill((255,255,255))
+    
         screen.blit(update_fps(), (0, 0))
-
-
-        
-
 
         food.draw(screen)
         food.update()
@@ -358,13 +371,14 @@ while True:
 
         if score == 0:
             screen.fill((64, 64, 64))
+            particle_update()
             score_surf = pixel_font.render(f'Press UP or w to start', False, pygame.Color('white'))
             score_surf_rect = score_surf.get_rect(center=(WIDTH / 2, HEIGHT / 2))
             screen.blit(score_surf, score_surf_rect)
         else:
             screen.fill((64, 64, 64))
             particle_update()
-            score_message = pixel_font.render(f'Your scored: {score}', False, ('white'))
+            score_message = pixel_font.render(f'Your score: {score}', False, ('white'))
             score_message_rect = score_message.get_rect(center=(WIDTH / 2, HEIGHT / 2))
             screen.blit(score_message, score_message_rect)
 
