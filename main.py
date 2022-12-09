@@ -118,11 +118,6 @@ class Player(pygame.sprite.Sprite):
                 self.death_sound.play()
             pigeon_death(self.rect.x, self.rect.y)
             game_active = False
-        if self.rect.top <= 0:
-            pigeon_death(self.rect.x, self.rect.y)
-            if soundstate == 0:
-                self.death_sound.play()
-            game_active = False
 
     def update(self):
         self.collision_obstacle()
@@ -199,7 +194,7 @@ def pigeon_eat(locationX, locationY):
                         random.choice(['#408245', '#0bde1d', '#f2ff00'])])
 
 def pigeon_death(locationX, locationY):
-    for i in range(500):
+    for i in range(200):
         square_size = random.randint(5, 70)
         particles.append([[locationX, locationY, square_size, square_size], 
                         random.randint(4,6), 
