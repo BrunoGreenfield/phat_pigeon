@@ -188,12 +188,12 @@ def pigeon_eat(locationX, locationY):
     for i in range(30):
         square_size = random.randint(3,20)
         particles.append([[locationX, locationY, square_size, square_size],
-                        random.randint(4,6),
+                        5,
                         [(random.randint(-80, 80)/4), (random.randint(-80,80)/4)],
                         random.choice(['#408245', '#0bde1d', '#f2ff00'])])
 
 def pigeon_death(locationX, locationY):
-    for i in range(1000):
+    for i in range(500):
         square_size = random.randint(5, 70)
         particles.append([[locationX, locationY, square_size, square_size], 
                         random.randint(4,6), 
@@ -236,7 +236,7 @@ def particle_update():
 
         pygame.draw.rect(screen, particle[3], particle[0], False)
 
-        particle[1] -= 0.01
+        particle[1] -= 0.03
 
         if particle[1] <= 0:
             particles.remove(particle)
