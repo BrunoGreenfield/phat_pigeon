@@ -1,5 +1,6 @@
 # phat pigeon :D
 
+from tkinter import simpledialog
 import pygame, math
 import random
 from sys import exit
@@ -113,7 +114,7 @@ class Player(pygame.sprite.Sprite):
 
         self.gravity += 0.5
         self.rect.y += self.gravity
-        if self.rect.bottom >= HEIGHT - 31:
+        if self.rect.bottom >= HEIGHT - 31 or self.rect.bottom <= -40:
             if soundstate == 0:
                 self.death_sound.play()
             pigeon_death(self.rect.x, self.rect.y)
@@ -283,9 +284,9 @@ player_jump_4 = pygame.image.load("graphics/pigeon/finished/pigeon_jump4_fixed.p
 player_jump_5 = pygame.image.load("graphics/pigeon/finished/pigeon_jump5_fixed.png").convert_alpha()
 player_mid_3_mainscreen = pygame.image.load("graphics/pigeon/finished/pigeon_mid3_fixed_mainscreen.png").convert_alpha()
 music = pygame.image.load("graphics/music.png").convert_alpha()
-music_rect = music.get_rect(center=(WIDTH - 75, 200))
+music_rect = music.get_rect(center=(WIDTH - 100, 200))
 no_music = pygame.image.load("graphics/no_music.png").convert_alpha()
-no_music_rect = no_music.get_rect(center=(WIDTH - 75, 200))
+no_music_rect = no_music.get_rect(center=(WIDTH - 100, 200))
 state = 0
 
 sound = [music, no_music]
@@ -296,16 +297,13 @@ soundtrack = pygame.mixer.Sound('audio/phat_pigeon_soundtrack1.wav')
 soundtrack.set_volume(1)
 soundtrack.play(-1)
 
-leaderboardtxt = open("leaderboard.txt")
-topscore = [68, 66, 64, 62, 60, 58, 56, 54, 52, 50, 48, 46, 44, 42, 40, 38, 36, 34, 32, 30, 28, 26, 24, 22, 20, 18, 16,
-            14, 12, 10, 8, 6, 4, 2, 0]
 
-score_surf = pixel_font.render(f'Welcome to Phat pigeon... Python Edition!', False, pygame.Color('#d18100'))
-score_surf_rect = score_surf.get_rect(center=(WIDTH / 2, 75))
-instructions_surf = pixel_font_small.render('Press (up) or (W) to start and jump', False, pygame.Color('#b8b8b8'))
 start_height = 125
+score_surf = pixel_font.render(f'Phat Pigeon (python)', False, pygame.Color('#d18100'))
+score_surf_rect = score_surf.get_rect(center=(WIDTH / 2, 75))
 instructions_surf_instu = pixel_font.render('How to play:', False, pygame.Color('#b8b8b8'))
 instructions_surf_instu_rect = instructions_surf_instu.get_rect(center=(WIDTH / 2, HEIGHT - start_height - 50))
+instructions_surf = pixel_font_small.render('Press (up) or (W) to start and jump', False, pygame.Color('#b8b8b8'))
 instructions_surf_rect = instructions_surf.get_rect(center=(WIDTH / 2, HEIGHT - start_height))
 instructions_surf_2 = pixel_font_small.render('Press (down) or (S) to dive down', False, pygame.Color('#b8b8b8'))
 instructions_surf_2_rect = instructions_surf_2.get_rect(center=(WIDTH / 2, HEIGHT - start_height + 25))
@@ -313,42 +311,16 @@ instructions_surf_3 = pixel_font_small.render('Avoid obstacles as they kill you 
                                               pygame.Color('#b8b8b8'))
 instructions_surf_3_rect = instructions_surf_3.get_rect(center=(WIDTH / 2, HEIGHT - start_height + 50))
 instructions_surf_4 = pixel_font_small.render(
-    'Try to avoid food when possible as it increases your weight and decreases your jump ability', False,
+    'Just know food will increase your weight, and will eventually kill you', False,
     pygame.Color('#b8b8b8'))
 instructions_surf_4_rect = instructions_surf_4.get_rect(center=(WIDTH / 2, HEIGHT - start_height + 75))
-have_fun_surf = pixel_font_small.render('Have fun!', False, pygame.Color('#b8b8b8'))
+have_fun_surf = pixel_font_small.render('You will not enjoy this. I promise you.', False, pygame.Color('#b8b8b8'))
 have_fun_surf_rect = have_fun_surf.get_rect(center=(WIDTH / 2, HEIGHT - start_height + 100))
 art_credit = pixel_font_tiny.render('Art credit: @lg_purearts', False, pygame.Color('#b8b8b8'))
 art_credit_rect = art_credit.get_rect(bottomleft=(3, HEIGHT - 3))
-me_plug = pixel_font_tiny.render('Programmed with blood, sweat and tears by me! (Bruno Greenfield (age: 15 years))',
+me_plug = pixel_font_tiny.render("'I would not recommend this' - Bruno Greenfield. Programmed in Python",
                                  False, pygame.Color('#8cc9ff'))
 me_plug_rect = me_plug.get_rect(center=(WIDTH / 2, 385))
-leaderboard = pixel_font_small.render('Top scores', False, pygame.Color('black'))
-leaderboard_rect = leaderboard.get_rect(center=(75, 25))
-leaderboard_1 = pixel_font_small.render(f'1. {topscore[0]}', False, pygame.Color('black'))
-leaderboard_1_rect = leaderboard_1.get_rect(midleft=(25, 75))
-leaderboard_2 = pixel_font_small.render(f'2. {topscore[1]}', False, pygame.Color('black'))
-leaderboard_2_rect = leaderboard_2.get_rect(midleft=(25, 100))
-leaderboard_3 = pixel_font_small.render(f'3. {topscore[2]}', False, pygame.Color('black'))
-leaderboard_3_rect = leaderboard_3.get_rect(midleft=(25, 125))
-leaderboard_4 = pixel_font_small.render(f'4: {topscore[3]}', False, pygame.Color('black'))
-leaderboard_4_rect = leaderboard_4.get_rect(midleft=(25, 150))
-leaderboard_5 = pixel_font_small.render(f'5: {topscore[4]}', False, pygame.Color('black'))
-leaderboard_5_rect = leaderboard_4.get_rect(midleft=(25, 175))
-leaderboard_6 = pixel_font_small.render(f'6: {topscore[5]}', False, pygame.Color('black'))
-leaderboard_6_rect = leaderboard_4.get_rect(midleft=(25, 200))
-leaderboard_7 = pixel_font_small.render(f'7: {topscore[6]}', False, pygame.Color('black'))
-leaderboard_7_rect = leaderboard_4.get_rect(midleft=(25, 225))
-leaderboard_8 = pixel_font_small.render(f'8: {topscore[7]}', False, pygame.Color('black'))
-leaderboard_8_rect = leaderboard_4.get_rect(midleft=(25, 250))
-leaderboard_9 = pixel_font_small.render(f'9: {topscore[8]}', False, pygame.Color('black'))
-leaderboard_9_rect = leaderboard_4.get_rect(midleft=(25, 275))
-leaderboard_10 = pixel_font_small.render(f'10: {topscore[9]}', False, pygame.Color('black'))
-leaderboard_10_rect = leaderboard_4.get_rect(midleft=(25, 300))
-leaderboard_11 = pixel_font_small.render(f'11: {topscore[10]}', False, pygame.Color('black'))
-leaderboard_11_rect = leaderboard_4.get_rect(midleft=(25, 325))
-leaderboard_12 = pixel_font_small.render(f'12: {topscore[11]}', False, pygame.Color('black'))
-leaderboard_12_rect = leaderboard_4.get_rect(midleft=(25, 350))
 
 player_dive_list = [player_dive_1, player_dive_2, player_dive_3, player_dive_4, player_dive_5]
 player_mid_list = [player_mid_1, player_mid_2, player_mid_3, player_mid_4, player_mid_5]
@@ -368,6 +340,74 @@ fall_speed = 10
 original_player_y = 245
 pigeon_deadness = False
 phatnesslevtxt = 0
+
+# ********************************************************************************************#
+
+# Leader board
+
+leaderboardtxt = open("leaderboard.txt", "r+")
+
+def leaderboardfunc():
+    global leaderboard
+    global leaderboard_rect
+    global leaderboard_1
+    global leaderboard_1_rect
+    global leaderboard_2
+    global leaderboard_2_rect
+    global leaderboard_3
+    global leaderboard_3_rect
+    global leaderboard_4
+    global leaderboard_4_rect
+    global leaderboard_5
+    global leaderboard_5_rect
+    global leaderboard_6
+    global leaderboard_6_rect
+    global leaderboard_7
+    global leaderboard_7_rect
+    global leaderboard_8
+    global leaderboard_8_rect
+    global leaderboard_9
+    global leaderboard_9_rect
+    global leaderboard_10
+    global leaderboard_10_rect
+    global leaderboard_11
+    global leaderboard_11_rect
+    global leaderboard_12
+    global leaderboard_12_rect
+    global leaderboardScore
+    global leaderboardPlayer
+
+    leaderboardtxtsp = leaderboardtxt.read().splitlines()
+
+    leaderboardPlayer = leaderboardtxtsp[0::2] # Gets used
+    leaderboardScore = leaderboardtxtsp[1::2] # Gets used
+
+    leaderboard = pixel_font_small.render('Top scores', False, pygame.Color('black'))
+    leaderboard_rect = leaderboard.get_rect(center=(75, 25))
+    leaderboard_1 = pixel_font_small.render(f'1. {leaderboardPlayer[0]}{int(leaderboardScore[0])}', False, pygame.Color('black'))
+    leaderboard_1_rect = leaderboard_1.get_rect(midleft=(25, 75))
+    leaderboard_2 = pixel_font_small.render(f'2. {leaderboardPlayer[1]}{int(leaderboardScore[1])}', False, pygame.Color('black'))
+    leaderboard_2_rect = leaderboard_2.get_rect(midleft=(25, 100))
+    leaderboard_3 = pixel_font_small.render(f'3. {leaderboardPlayer[2]}{int(leaderboardScore[2])}', False, pygame.Color('black'))
+    leaderboard_3_rect = leaderboard_3.get_rect(midleft=(25, 125))
+    leaderboard_4 = pixel_font_small.render(f'4: {leaderboardPlayer[3]}{int(leaderboardScore[3])}', False, pygame.Color('black'))
+    leaderboard_4_rect = leaderboard_4.get_rect(midleft=(25, 150))
+    leaderboard_5 = pixel_font_small.render(f'5: {leaderboardPlayer[4]}{int(leaderboardScore[4])}', False, pygame.Color('black'))
+    leaderboard_5_rect = leaderboard_4.get_rect(midleft=(25, 175))
+    leaderboard_6 = pixel_font_small.render(f'6: {leaderboardPlayer[5]}{int(leaderboardScore[5])}', False, pygame.Color('black'))
+    leaderboard_6_rect = leaderboard_4.get_rect(midleft=(25, 200))
+    leaderboard_7 = pixel_font_small.render(f'7: {leaderboardPlayer[6]}{int(leaderboardScore[6])}', False, pygame.Color('black'))
+    leaderboard_7_rect = leaderboard_4.get_rect(midleft=(25, 225))
+    leaderboard_8 = pixel_font_small.render(f'8: {leaderboardPlayer[7]}{int(leaderboardScore[7])}', False, pygame.Color('black'))
+    leaderboard_8_rect = leaderboard_4.get_rect(midleft=(25, 250))
+    leaderboard_9 = pixel_font_small.render(f'9: {leaderboardPlayer[8]}{int(leaderboardScore[8])}', False, pygame.Color('black'))
+    leaderboard_9_rect = leaderboard_4.get_rect(midleft=(25, 275))
+    leaderboard_10 = pixel_font_small.render(f'10: {leaderboardPlayer[9]}{int(leaderboardScore[9])}', False, pygame.Color('black'))
+    leaderboard_10_rect = leaderboard_4.get_rect(midleft=(25, 300))
+    leaderboard_11 = pixel_font_small.render(f'11: {leaderboardPlayer[10]}{int(leaderboardScore[10])}', False, pygame.Color('black'))
+    leaderboard_11_rect = leaderboard_4.get_rect(midleft=(25, 325))
+    leaderboard_12 = pixel_font_small.render(f'12: {leaderboardPlayer[11]}{int(leaderboardScore[11])}', False, pygame.Color('black'))
+    leaderboard_12_rect = leaderboard_4.get_rect(midleft=(25, 350))
 
 # ********************************************************************************************#
 
@@ -400,6 +440,11 @@ pygame.time.set_timer(food_timer, 1500)
 
 # ********************************************************************************************#
 
+# Login
+
+playerName = simpledialog.askstring("Name", "Enter your name")
+
+# ********************************************************************************************#
 # Game loop
 while True:
     for event in pygame.event.get():
@@ -471,14 +516,16 @@ while True:
         phatness_text_rect = phatness_text.get_rect(center=(WIDTH / 2, 25))
         screen.blit(phatness_text, phatness_text_rect)
     else:
+        leaderboardfunc()
+        
         jump_height = 10
         fall_speed = 10
         phatnesslevtxt = 0
 
         screen.fill((64, 64, 64))
         pygame.draw.rect(screen, '#387038', (0, HEIGHT - 200, WIDTH, HEIGHT))
-        pygame.draw.rect(screen, '#4685eb', (0, 0, 150, 400))
-        pygame.draw.rect(screen, '#4685eb', (WIDTH - 150, 0, WIDTH - 150, 400))
+        pygame.draw.rect(screen, '#4685eb', (0, 0, 200, 400))
+        pygame.draw.rect(screen, '#4685eb', (WIDTH - 200, 0, WIDTH - 200, 400))
         screen.blit(sound[soundstate], sound_rect[soundstate])
         screen.blit(instructions_surf_instu, instructions_surf_instu_rect)
         screen.blit(instructions_surf, instructions_surf_rect)
@@ -507,6 +554,10 @@ while True:
             screen.blit(me_plug, me_plug_rect)
 
         else:
+            if score > int(leaderboardScore[11]):
+                leaderboardScore.append(score)
+                leaderboardScore.sort()
+                leaderboardPlayer.insert(leaderboardScore.index(score) - 1 ,playerName)
             screen.blit(player_mid_3_mainscreen, player_mid_3_mainscreen.get_rect(center=(WIDTH / 2, 175)))
             score_message = pixel_font.render(f'Your score: {score}', False, '#b8b8b8')
             score_message_rect = score_message.get_rect(center=(WIDTH / 2, 350))
