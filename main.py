@@ -15,6 +15,8 @@ PHATNESS_INCREASE = 1.25
 
 # ********************************************************************************************#
 
+#new line
+
 # Player class
 class Player(pygame.sprite.Sprite):
     def __init__(self):
