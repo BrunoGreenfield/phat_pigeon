@@ -240,7 +240,7 @@ def particle_update():
         if particle[2][1] < 0:
             particle[2][1] += 0.15
 
-        # particle[0][0] -= scroll
+       # particle[0][0] -= scroll
         particle[2][1] += 0.2
 
         pygame.draw.rect(screen, particle[3], particle[0], False)
