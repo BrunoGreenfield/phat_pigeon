@@ -1,4 +1,4 @@
-# phat pigeon :D
+# phat pigeon
 
 from tkinter import simpledialog
 import pygame, math
