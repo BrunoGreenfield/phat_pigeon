@@ -1,24 +1,12 @@
-N/A: 
-0
-N/A: 
-0
-N/A: 
-0
-N/A: 
-0
-N/A: 
-0
-N/A: 
-0
-N/A: 
-0
-N/A: 
-0
-N/A: 
-0
-N/A: 
-0
-N/A: 
-0
-N/A: 
-0
+plyr12 0
+plyr11 0
+plyr10 0
+plyr9 0
+plyr8 0
+plyr7 0
+plyr6 0
+plyr5 0
+plyr4 0
+plyr3 0
+plyr2 0
+plyr1 0
