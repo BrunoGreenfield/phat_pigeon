@@ -387,7 +387,10 @@ def leaderboardfunc():
     leaderboardtxtsp = leaderboardtxt.read().splitlines()
     leaderboardTxtDic = {}
     for item in leaderboardtxtsp:
-        name, score = item.split()
+        try:
+            name, score = item.split()
+        except:
+            continue
         leaderboardTxtDic[name] = int(score)
     
     # Sort the dictionary by scores in descending order and create a new dictionary
