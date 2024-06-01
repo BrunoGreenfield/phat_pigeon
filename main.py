@@ -486,8 +486,9 @@ while True:
                         soundstate = 0
                         soundtrack.play(-1)
 
-            if ((event.type == pygame.KEYDOWN and event.key == pygame.K_UP) or (
-                    event.type == pygame.KEYDOWN and event.key == pygame.K_w)) and (pygame.time.get_ticks() - nextGame) > delayUntilNextPlay:
+            if ((event.type == pygame.KEYDOWN and event.key == pygame.K_UP) \
+                    or (event.type == pygame.KEYDOWN and event.key == pygame.K_w)) \
+                    and (pygame.time.get_ticks() - nextGame) > delayUntilNextPlay: # prevent accidental restarts via a delay
                 game_active = True
                 phatness_level = 0
                 player.empty()
