@@ -311,16 +311,13 @@ instructions_surf_3 = pixel_font_small.render('Avoid obstacles as they kill you 
                                               pygame.Color('#b8b8b8'))
 instructions_surf_3_rect = instructions_surf_3.get_rect(center=(WIDTH / 2, HEIGHT - start_height + 50))
 instructions_surf_4 = pixel_font_small.render(
-    'Just know food will increase your weight, and will eventually kill you', False,
+    'Food will increase your weight, and will eventually kill you', False,
     pygame.Color('#b8b8b8'))
 instructions_surf_4_rect = instructions_surf_4.get_rect(center=(WIDTH / 2, HEIGHT - start_height + 75))
-have_fun_surf = pixel_font_small.render('You will not enjoy this. I promise you.', False, pygame.Color('#b8b8b8'))
+have_fun_surf = pixel_font_small.render('Good luck!', False, pygame.Color('#b8b8b8'))
 have_fun_surf_rect = have_fun_surf.get_rect(center=(WIDTH / 2, HEIGHT - start_height + 100))
 art_credit = pixel_font_tiny.render('Art credit: @lg_purearts', False, pygame.Color('#b8b8b8'))
 art_credit_rect = art_credit.get_rect(bottomleft=(3, HEIGHT - 3))
-me_plug = pixel_font_tiny.render("Unfinished at the current time",
-                                 False, pygame.Color('#8cc9ff'))
-me_plug_rect = me_plug.get_rect(center=(WIDTH / 2, 385))
 leaderboard = pixel_font_small.render('Top scores:', False, pygame.Color('black'))
 leaderboard_rect = leaderboard.get_rect(center=(75, 25))
 
@@ -460,7 +457,7 @@ pygame.time.set_timer(food_timer, 1500)
 
 # Login
 
-playerName = simpledialog.askstring("Name", "Enter your name")
+playerName = simpledialog.askstring("Name", "Enter your name").lower()
 
 # ********************************************************************************************#
 # Game loop
@@ -572,7 +569,6 @@ while True:
             screen.blit(player_mid_3_mainscreen, player_mid_3_mainscreen.get_rect(center=(WIDTH / 2, HEIGHT / 2.4)))
             screen.blit(score_surf, score_surf_rect)
             screen.blit(art_credit, art_credit_rect)
-            screen.blit(me_plug, me_plug_rect)
 
         else:
             if (playerName not in orderedLeaderboardTxtDic) or (int(orderedLeaderboardTxtDic.get(playerName)) < score):
